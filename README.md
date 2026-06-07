@@ -1,48 +1,61 @@
-# FrontEnd Blog
+# 二手显卡行情
 
-基于 [VitePress](https://vitepress.dev/) 搭建的个人技术博客，记录学习和实践过程。
+Vue3 + Vite + ECharts 构建的显卡行情可视化页面。
 
-## 内容目录
+## 快速使用
 
-| 分类 | 说明 |
-|------|------|
-| CSS / SVG / HTML5 | 前端基础与进阶 |
-| JavaScript / ES6+ | JS 深入与专题 |
-| Vue / React | 主流框架学习 |
-| Vite / 工程化 / 脚手架 / 微前端 | 前端工程化实践 |
-| Three.js | 3D 图形渲染 |
-| Node.js / NestJS / Java / Python | 后端开发 |
-| MySQL / Docker / Linux / 计算机网络 | 运维与基础设施 |
-| PLC 工业自动化 | 西门子/三菱/ABB 系列 |
-| AI 大模型 / 算法 | 前沿技术 |
+直接双击打开 `index.html` 即可（已打包成单文件，1.1MB）。
 
-## 本地开发
+## 开发
 
 ```bash
-# 安装依赖
-pnpm install
-
-# 启动开发服务器
-pnpm dev
-
-# 构建
-pnpm build
-
-# 预览构建产物
-pnpm preview
+npm install
+npm run dev      # 开发调试
+npm run build    # 构建单文件（输出 index.html）
 ```
 
-## 技术栈
+## 数据更新
 
-- **框架**: VitePress 2.0 + Vue 3
-- **样式**: SCSS + Element Plus
-- **字体**: 霞鹜文楷 (LXGW WenKai Lite)
-- **部署**: GitHub Pages
+```bash
+# Python 版（依赖 Python3，内置库无需安装）
+python3 process_gpu_data.py [Excel文件路径]
 
-## 在线访问
+# Node.js 版（依赖 Node.js）
+node process_gpu_data.js [Excel文件路径]
 
-🔗 [raopan2021.github.io/blog/](https://raopan2021.github.io/blog/)
+# 或使用 npm 脚本
+npm run update -- [Excel文件路径]
+```
 
-## License
+## 手动添加月度数据（如4月）
 
-[MIT](./LICENSE)
+由于 xlsx 格式限制，添加新月数据需手动编辑 `data.js`：
+
+```js
+// 1. 在 months 数组末尾添加新月份
+export const months = ['2025年12月', '2026年1月', '2026年2月', '2026年3月', '2026年4月'];
+
+// 2. 在每张显卡的 prices 和 changes 对象中添加
+"prices": { "2025年12月": 20000, "2026年1月": 19500, ..., "2026年4月": 21000 },
+"changes": { "2026年4月": +500 },  // 与上月相比的涨跌
+
+// 3. 重新构建
+npm run build
+```
+
+## 文件结构
+
+```
+gpu-market/
+├── index.html              ← 单文件打包（直接双击运行）
+├── src/                   ← 源码
+│   ├── App.vue
+│   ├── components/
+│   ├── data.js            ← 显卡数据（由脚本生成）
+│   └── styles/
+├── process_gpu_data.js    ← Node.js 数据处理脚本
+├── process_gpu_data.py    ← Python 数据处理脚本
+├── serve.py               ← HTTP 服务脚本
+├── data.json              ← 原始 JSON 数据
+└── 二手显卡行情.xlsx      ← 原始 Excel（供下载）
+```
